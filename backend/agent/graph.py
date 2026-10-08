@@ -103,6 +103,61 @@ Examples in multiple languages:
 
 # ── Nodes ─────────────────────────────────────────────────────────────────────
 
+def _heuristic_fallback_parse(instruction: str, file_type: str) -> dict | None:
+    """Deterministic fallback parser for CI environments, mock keys, and network timeouts."""
+    text = instruction.lower().strip()
+    kb_match = re.search(r"(\d+)\s*(?:kb|k\b)", text)
+    kb_val = int(kb_match.group(1)) if kb_match else None
+
+    # Increase / expand
+    if any(k in text for k in ["increase", "expand", "badhao", "upscale"]):
+        return {"operation": "increase", "params": {"target_kb": kb_val or (100 if file_type == "image" else 200)}}
+
+    # Compress / reduce
+    if any(k in text for k in ["compress", "reduce", "minska", "kam", "chhota", "smaller"]):
+        return {"operation": "compress", "params": {"target_kb": kb_val or (50 if file_type == "image" else 300)}}
+
+    # Rotate
+    if any(k in text for k in ["rotate", "rotera", "ghuma", "flip"]):
+        deg = 90
+        if "180" in text:
+            deg = 180
+        elif "270" in text:
+            deg = 270
+        return {"operation": "rotate", "params": {"degrees": deg}}
+
+    # Convert
+    if any(k in text for k in ["convert", "badlo", "format"]):
+        fmt = "WEBP"
+        if "png" in text:
+            fmt = "PNG"
+        elif "jpg" in text or "jpeg" in text:
+            fmt = "JPEG"
+        return {"operation": "convert", "params": {"format": fmt}}
+
+    # Resize
+    if any(k in text for k in ["resize", "dimension", "width", "height", "scale"]):
+        dim_match = re.search(r"(\d+)\s*(?:x|by)\s*(\d+)", text)
+        if dim_match:
+            return {"operation": "resize", "params": {"width": int(dim_match.group(1)), "height": int(dim_match.group(2))}}
+
+    # Split (PDF)
+    if file_type == "pdf" and "split" in text:
+        nums = re.findall(r"\d+", text)
+        if len(nums) >= 2:
+            return {"operation": "split", "params": {"start_page": int(nums[0]), "end_page": int(nums[1])}}
+        elif len(nums) == 1:
+            return {"operation": "split", "params": {"start_page": int(nums[0]), "end_page": None}}
+
+    # Extract (PDF)
+    if file_type == "pdf" and "extract" in text:
+        nums = [int(n) for n in re.findall(r"\d+", text)]
+        if nums:
+            return {"operation": "extract_pages", "params": {"pages": nums}}
+
+    return None
+
+
 def parse_instruction(state: AgentState) -> AgentState:
     """LLM node: parse natural language instruction into operation and params."""
     file_type = state["file_type"]
@@ -134,7 +189,12 @@ def parse_instruction(state: AgentState) -> AgentState:
         return {**state, "operation": operation, "params": params}
 
     except Exception as e:
-        logger.error(f"Instruction parsing failed: {e}")
+        logger.warning(f"LLM parsing error ({e}), executing deterministic fallback...")
+        fallback = _heuristic_fallback_parse(state["instruction"], file_type)
+        if fallback:
+            logger.info(f"Fallback parse successful: operation={fallback['operation']}, params={fallback['params']}")
+            return {**state, "operation": fallback["operation"], "params": fallback["params"], "error": None}
+        logger.error(f"Instruction parsing completely failed: {e}")
         return {**state, "operation": "unknown", "params": {}, "error": str(e)}
 
 
