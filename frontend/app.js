@@ -6,9 +6,31 @@
 (function () {
   'use strict';
 
+  // ── Default Backend Endpoints ─────────────────────────────────────────────
+  const PRODUCTION_API_URL = 'https://nexaforge-ai-production.up.railway.app';
+  const LOCAL_API_URL = 'http://localhost:8000';
+
+  function normalizeApiUrl(url) {
+    if (!url) return '';
+    let clean = url.trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(clean)) {
+      clean = 'https://' + clean;
+    }
+    return clean;
+  }
+
+  function resolveInitialApiUrl() {
+    const saved = localStorage.getItem('nexaforge_api_url');
+    if (saved) return normalizeApiUrl(saved);
+
+    // If running on custom domain or Cloudflare Pages, always use production Railway API
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isLocalhost ? LOCAL_API_URL : PRODUCTION_API_URL;
+  }
+
   // ── State Management ───────────────────────────────────────────────────────
   const state = {
-    apiBaseUrl: localStorage.getItem('nexaforge_api_url') || 'http://localhost:8000',
+    apiBaseUrl: resolveInitialApiUrl(),
     mode: 'ai',               // 'ai' | 'studio'
     studioCategory: 'img',    // 'img' | 'pdf'
     activeTool: 'img-compress',
@@ -180,7 +202,22 @@
     }
 
     try {
-      const res = await fetch(`${state.apiBaseUrl}/api/system/status`, { method: 'GET' });
+      let res;
+      try {
+        res = await fetch(`${state.apiBaseUrl}/api/system/status`, { method: 'GET' });
+        if (!res.ok && state.apiBaseUrl === LOCAL_API_URL) {
+          throw new Error('Local server non-200');
+        }
+      } catch (localErr) {
+        // Auto-fallback: if local backend is offline, route to live Railway cloud backend
+        if (state.apiBaseUrl === LOCAL_API_URL) {
+          state.apiBaseUrl = PRODUCTION_API_URL;
+          res = await fetch(`${state.apiBaseUrl}/api/system/status`, { method: 'GET' });
+        } else {
+          throw localErr;
+        }
+      }
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const comps = data.components || {};
@@ -1080,7 +1117,9 @@
   });
 
   DOM.testApiBtn.addEventListener('click', async () => {
-    const testUrl = DOM.apiBaseUrlInput.value.trim().replace(/\/$/, '');
+    let testUrl = normalizeApiUrl(DOM.apiBaseUrlInput.value.trim());
+    if (!testUrl) testUrl = PRODUCTION_API_URL;
+    DOM.apiBaseUrlInput.value = testUrl;
     DOM.apiTestResult.className = 'api-test-result';
     DOM.apiTestResult.textContent = 'Testing connection...';
 
@@ -1100,14 +1139,13 @@
   });
 
   DOM.saveSettingsBtn.addEventListener('click', () => {
-    const newUrl = DOM.apiBaseUrlInput.value.trim().replace(/\/$/, '');
-    if (newUrl) {
-      state.apiBaseUrl = newUrl;
-      localStorage.setItem('nexaforge_api_url', newUrl);
-      showToast('Settings saved!', 'success');
-      DOM.settingsModal.style.display = 'none';
-      checkSystemDiagnostics();
-    }
+    let newUrl = normalizeApiUrl(DOM.apiBaseUrlInput.value.trim());
+    if (!newUrl) newUrl = PRODUCTION_API_URL;
+    state.apiBaseUrl = newUrl;
+    localStorage.setItem('nexaforge_api_url', newUrl);
+    showToast('Settings saved: connected to ' + newUrl, 'success');
+    DOM.settingsModal.style.display = 'none';
+    checkSystemDiagnostics();
   });
 
   // ── Init & Telemetry Polling ──────────────────────────────────────────────

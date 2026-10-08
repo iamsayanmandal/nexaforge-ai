@@ -707,11 +707,11 @@
       </div>
       <div class="modal-body">
         <p class="modal-desc">
-          Configure backend API endpoint. For local development use <code>http://localhost:8000</code>. For production use your Railway URL.
+          Backend API is automatically connected to Railway production (<code>https://nexaforge-ai-production.up.railway.app</code>). You can switch to a custom endpoint below if needed.
         </p>
         <div class="form-group">
           <label class="param-label" for="api-base-url-input">Backend Base URL</label>
-          <input type="url" id="api-base-url-input" class="text-input full-width" placeholder="http://localhost:8000" />
+          <input type="url" id="api-base-url-input" class="text-input full-width" placeholder="https://nexaforge-ai-production.up.railway.app" />
         </div>
         <div class="api-test-result" id="api-test-result"></div>
       </div>
