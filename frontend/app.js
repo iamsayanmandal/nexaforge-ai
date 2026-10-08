@@ -282,8 +282,8 @@
         label: comps.api_server?.status === 'online' ? 'Online' : 'Offline',
       },
       {
-        name: 'Groq LLaMA Inference Engine',
-        meta: `Model: ${comps.llm_engine?.model || 'llama-3.3-70b-versatile'} • Provider: ${comps.llm_engine?.provider || 'Groq'}`,
+        name: 'Groq GPT-OSS Inference Engine',
+        meta: `Model: ${comps.llm_engine?.model || 'openai/gpt-oss-20b'} • Provider: ${comps.llm_engine?.provider || 'Groq Cloud'}`,
         status: comps.llm_engine?.status === 'online' ? 'online' : 'warning',
         label: comps.llm_engine?.status === 'online' ? 'Connected' : 'Missing Key',
       },
@@ -1152,4 +1152,17 @@
   checkSystemDiagnostics();
   // Poll telemetry every 30 seconds so visitors and recruiters have live status
   setInterval(() => checkSystemDiagnostics(false), 30000);
+
+  // ── PWA Service Worker Registration ───────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => {
+          console.log('[PWA] Service Worker registered:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('[PWA] Service Worker registration failed:', err);
+        });
+    });
+  }
 })();

@@ -2,9 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>NexaForge — AI Media Processing Engine</title>
   <meta name="description" content="Intelligent, agentic AI media processing engine for images and PDFs. Powered by LangGraph, ChromaDB RAG, and FastAPI.">
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="theme-color" content="#070b14">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NexaForge">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -45,17 +56,17 @@
           </svg>
         </button>
 
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="nav-btn github-link" title="Source Code" aria-label="GitHub Repository">
+        <a href="https://github.com/iamsayanmandal/nexaforge-ai" target="_blank" rel="noopener noreferrer" class="nav-btn github-link" title="Source Code" aria-label="GitHub Repository">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
           </svg>
         </a>
 
-        <button class="primary-pill-btn" id="toggle-assistant-header-btn">
+        <button class="primary-pill-btn header-rag-btn" id="toggle-assistant-header-btn" title="Open RAG Assistant" aria-label="Ask RAG">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
-          <span>Ask RAG</span>
+          <span class="header-btn-text">Ask RAG</span>
         </button>
       </nav>
     </div>
@@ -67,7 +78,7 @@
       <div class="tech-pills">
         <span class="tech-pill">LangGraph Agent</span>
         <span class="tech-pill">ChromaDB RAG</span>
-        <span class="tech-pill">Groq Llama-3</span>
+        <span class="tech-pill">Groq GPT-OSS-20B</span>
         <span class="tech-pill">FastAPI</span>
       </div>
       <h1 class="hero-title">Process Media at the <span class="gradient-text">Speed of Thought</span></h1>
@@ -648,8 +659,8 @@
           </svg>
         </div>
         <div>
-          <h3 class="assistant-name">NexaForge Assistant</h3>
-          <span class="assistant-badge">ChromaDB + Groq RAG</span>
+          <h3 class="assistant-name">NexaForge RAG Assistant</h3>
+          <span class="assistant-badge">ChromaDB + GPT-OSS RAG</span>
         </div>
       </div>
       <button class="close-drawer-btn" id="close-assistant-btn" aria-label="Close Assistant">
@@ -683,14 +694,14 @@
   </div>
 
   <!-- Floating Assistant Toggle Button -->
-  <button class="floating-assistant-btn" id="floating-assistant-btn" aria-label="Open AI Assistant">
+  <button class="floating-assistant-btn" id="floating-assistant-btn" aria-label="Open RAG Assistant">
     <div class="floating-btn-glow"></div>
     <span class="floating-btn-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
     </span>
-    <span class="floating-btn-text">Ask AI</span>
+    <span class="floating-btn-text">Ask RAG</span>
   </button>
 
   <!-- ================= SETTINGS MODAL ================= -->
@@ -742,7 +753,7 @@
       </div>
       <div class="modal-body">
         <p class="modal-desc">
-          Real-time connection telemetry for recruiters & engineering evaluators. Verify that FastAPI, Groq LLM inference, ChromaDB vector store, and LangSmith observability are active.
+          Real-time connection telemetry for recruiters & engineering evaluators. Verify that FastAPI, Groq GPT-OSS inference, ChromaDB vector store, and LangSmith observability are active.
         </p>
 
         <div class="services-list" id="services-list">
@@ -778,10 +789,10 @@
   <footer class="app-footer">
     <div class="footer-inner">
       <div class="footer-copy">
-        © 2026 <strong>NexaForge</strong> — Developed by Sayan Mandal. High-performance AI media processing.
+        © 2026 <strong>NexaForge</strong> — Engineered by <a href="https://sayanmandal.in" target="_blank" rel="noopener noreferrer" class="footer-author-link">Sayan Mandal (sayanmandal.in)</a>. High-performance AI media processing.
       </div>
       <div class="footer-meta">
-        <span>FastAPI</span> • <span>LangGraph</span> • <span>LangSmith</span> • <span>RAGAS Evaluated</span>
+        <span>FastAPI</span> • <span>LangGraph</span> • <span>GPT-OSS-20B</span> • <span>LangSmith</span> • <span>ChromaDB RAG</span>
       </div>
     </div>
   </footer>

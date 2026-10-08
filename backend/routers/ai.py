@@ -411,7 +411,7 @@ async def system_status():
                 "memory_safe": True,
             },
             "llm_engine": {
-                "name": "Groq LLaMA Inference",
+                "name": "Groq GPT-OSS Inference",
                 "status": "online" if groq_key else "missing_key",
                 "model": groq_model,
                 "provider": "Groq Cloud",

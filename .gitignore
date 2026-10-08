@@ -50,3 +50,6 @@ backend/chroma_db/
 scratch/
 test_input.jpg
 processed_file*
+
+# Firebase Hosting Cache
+.firebase/

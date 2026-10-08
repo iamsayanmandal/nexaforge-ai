@@ -4,7 +4,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-0.2-FF6F00.svg)](https://langchain-ai.github.io/langgraph/)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-HNSW-orange.svg)](https://www.trychroma.com/)
-[![Groq](https://img.shields.io/badge/Groq-Llama--3-f55036.svg)](https://groq.com/)
+[![Groq](https://img.shields.io/badge/Groq-GPT--OSS--20B-f55036.svg)](https://groq.com/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF.svg)](https://github.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -23,7 +23,7 @@
 - *"split pages 1 to 5"*
 - *"rotate 90 degrees"*
 
-Behind the scenes, a **LangGraph StateGraph agent** powered by **Groq (Llama-3.3-70B / Llama-3.1-8B)** parses user intent, validates deterministic parameters, and routes execution into a zero-overhead **in-memory streaming pipeline** (Pillow + PyMuPDF + pikepdf). The LLM never sees or stores raw binary files, guaranteeing strict data confidentiality and sub-second processing.
+Behind the scenes, a **LangGraph StateGraph agent** powered by **Groq (openai/gpt-oss-20b)** parses user intent, validates deterministic parameters, and routes execution into a zero-overhead **in-memory streaming pipeline** (Pillow + PyMuPDF + pikepdf). The LLM never sees or stores raw binary files, guaranteeing strict data confidentiality and sub-second processing.
 
 NexaForge also includes a **RAG (Retrieval-Augmented Generation) Knowledge Assistant** powered by **ChromaDB vector search** and **sentence-transformers embeddings** (`all-MiniLM-L6-v2`) that answers user questions regarding media algorithms, compression mathematics, and system limits.
 
@@ -47,7 +47,7 @@ flowchart TD
         
         subgraph Agentic ["AI Intelligence Layer"]
             Graph["LangGraph StateGraph"]
-            Groq["Groq Cloud Inference (LLaMA)"]
+            Groq["Groq Cloud Inference (GPT-OSS-20B)"]
             LangSmith["LangSmith Observability\n(Traces, Latency, Token Metrics)"]
         end
         
