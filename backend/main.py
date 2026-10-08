@@ -57,6 +57,8 @@ app = FastAPI(
 # ── CORS — allow all origins (Cloudflare Workers, Pages, Custom Domains, Dev) ──
 ALLOWED_ORIGINS = [
     "https://nexaforge.sayanmandal.in",
+    "https://nexaforge-sayan.web.app",
+    "https://nexaforge-sayan.firebaseapp.com",
     "https://nexaforge-ai.pages.dev",
     "https://nexaforge-ai.hakerworld309.workers.dev",
     "http://localhost:3000",
