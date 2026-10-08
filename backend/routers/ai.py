@@ -384,10 +384,10 @@ async def system_status():
     Returns live connectivity status of all integrated services:
     FastAPI backend, Groq LLM API, ChromaDB Vector DB, and LangSmith observability.
     """
-    groq_key = os.getenv("GROQ_API_KEY", "")
-    langsmith_key = os.getenv("LANGCHAIN_API_KEY", "")
-    tracing_enabled = os.getenv("LANGCHAIN_TRACING_V2", "false").lower() == "true"
-    groq_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+    groq_key = os.getenv("GROQ_API_KEY", "").strip("'\" \t\r\n")
+    langsmith_key = os.getenv("LANGCHAIN_API_KEY", "").strip("'\" \t\r\n")
+    tracing_enabled = os.getenv("LANGCHAIN_TRACING_V2", "false").strip("'\" \t\r\n").lower() == "true"
+    groq_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b").strip("'\" \t\r\n")
     
     # ChromaDB chunks count
     try:

@@ -54,10 +54,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS — allow Cloudflare Pages domain + localhost for dev ─────────────────
+# ── CORS — allow all origins (Cloudflare Workers, Pages, Custom Domains, Dev) ──
 ALLOWED_ORIGINS = [
     "https://nexaforge.sayanmandal.in",
     "https://nexaforge-ai.pages.dev",
+    "https://nexaforge-ai.hakerworld309.workers.dev",
     "http://localhost:3000",
     "http://localhost:8080",
     "http://127.0.0.1:5500",   # VS Code Live Server
@@ -68,7 +69,7 @@ ALLOWED_ORIGINS = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|.*\.pages\.dev|.*\.sayanmandal\.in)(:\d+)?$",
+    allow_origin_regex=r"^https?://.*$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
