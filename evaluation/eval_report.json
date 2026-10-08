@@ -1,0 +1,69 @@
+{
+  "metrics": {
+    "retrieval_hit_rate": 1.0,
+    "faithfulness_score": 0.92,
+    "answer_relevancy_score": 0.89,
+    "context_precision": 0.86,
+    "average_latency_sec": 2.81,
+    "total_test_samples": 5
+  },
+  "details": [
+    {
+      "test_id": 1,
+      "question": "How do I compress an image to under 100KB in NexaForge?",
+      "expected_source": "image_compress",
+      "retrieved_sources": [
+        "image_compress",
+        "pdf_compress"
+      ],
+      "hit": true,
+      "latency_sec": 10.221,
+      "answer_preview": "To compress an image to under 100\u202fKB in NexaForge, simply type:\n\n```text\ncompress this image under 100KB\n```\n\nNexaForge ..."
+    },
+    {
+      "test_id": 2,
+      "question": "Can I convert a JPG to transparent PNG?",
+      "expected_source": "image_convert",
+      "retrieved_sources": [
+        "image_compress",
+        "image_convert"
+      ],
+      "hit": true,
+      "latency_sec": 1.584,
+      "answer_preview": "No \u2013 a JPG image has no transparency channel, so you can\u2019t turn it into a truly transparent PNG. You can convert the JPG..."
+    },
+    {
+      "test_id": 3,
+      "question": "How can I merge two PDF documents into one?",
+      "expected_source": "pdf_merge",
+      "retrieved_sources": [
+        "pdf_merge"
+      ],
+      "hit": true,
+      "latency_sec": 0.821,
+      "answer_preview": "To merge two PDFs into a single document:\n\n1. **Upload** both files (click the upload zone and select the two PDFs).  \n2..."
+    },
+    {
+      "test_id": 4,
+      "question": "What happens if I split a PDF with start page 1 and end page 3?",
+      "expected_source": "pdf_split_extract",
+      "retrieved_sources": [
+        "pdf_split_extract"
+      ],
+      "hit": true,
+      "latency_sec": 0.703,
+      "answer_preview": "Splitting the PDF from page\u202f1 to page\u202f3 will give you a new, smaller PDF that contains **only pages\u202f1,\u202f2, and\u202f3** of the..."
+    },
+    {
+      "test_id": 5,
+      "question": "How do I turn scanned phone photos into a multi-page PDF?",
+      "expected_source": "pdf_images_to_pdf",
+      "retrieved_sources": [
+        "pdf_images_to_pdf"
+      ],
+      "hit": true,
+      "latency_sec": 0.718,
+      "answer_preview": "To turn your phone photos into a multi\u2011page PDF:\n\n1. **Upload the photos** \u2013 add all the scanned images (JPG, PNG, or WE..."
+    }
+  ]
+}

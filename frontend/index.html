@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexaForge — AI Media Processing Engine</title>
+  <meta name="description" content="Intelligent, agentic AI media processing engine for images and PDFs. Powered by LangGraph, ChromaDB RAG, and FastAPI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-orb orb-1" aria-hidden="true"></div>
+  <div class="glow-orb orb-2" aria-hidden="true"></div>
+  <div class="glow-orb orb-3" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo" id="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Nexa<span class="brand-accent">Forge</span></span>
+          <span class="brand-tagline">AI Media Engine</span>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <button class="status-badge-btn" id="api-status-badge" title="Click to view live recruiter system diagnostics" aria-label="System Diagnostics">
+          <span class="status-dot"></span>
+          <span class="status-label" id="api-status-text">Checking Services...</span>
+          <span class="status-hint-tag">Diagnostics</span>
+        </button>
+        
+        <button class="nav-btn" id="open-settings-btn" title="API Configuration" aria-label="API Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="nav-btn github-link" title="Source Code" aria-label="GitHub Repository">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
+
+        <button class="primary-pill-btn" id="toggle-assistant-header-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Ask RAG</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="main-content">
+    <section class="hero-section">
+      <div class="tech-pills">
+        <span class="tech-pill">LangGraph Agent</span>
+        <span class="tech-pill">ChromaDB RAG</span>
+        <span class="tech-pill">Groq Llama-3</span>
+        <span class="tech-pill">FastAPI</span>
+      </div>
+      <h1 class="hero-title">Process Media at the <span class="gradient-text">Speed of Thought</span></h1>
+      <p class="hero-subtitle">
+        Type plain English commands or use studio tools to compress, resize, format, rotate, merge, and split images & PDFs with deterministic precision.
+      </p>
+
+      <!-- Mode Switcher -->
+      <div class="mode-switcher-container">
+        <div class="mode-switcher" role="tablist">
+          <button class="mode-tab active" id="tab-ai-mode" role="tab" aria-selected="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              <path d="M5 3v4"/>
+              <path d="M19 17v4"/>
+              <path d="M3 5h4"/>
+              <path d="M17 19h4"/>
+            </svg>
+            <span>AI Auto-Pilot</span>
+            <span class="badge-mini">Agentic</span>
+          </button>
+          <button class="mode-tab" id="tab-studio-mode" role="tab" aria-selected="false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 21V9"/>
+            </svg>
+            <span>Studio Tools</span>
+            <span class="badge-mini">Direct</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workspace Container -->
+    <div class="workspace-card glass-panel" id="workspace-card">
+
+      <!-- ================= MODE 1: AI AUTO-PILOT ================= -->
+      <div class="mode-content active" id="ai-mode-panel">
+        <div class="ai-input-zone">
+          <label for="ai-instruction-input" class="zone-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.35rem; vertical-align: -2px;">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            What would you like NexaForge to do?
+          </label>
+          <div class="instruction-box">
+            <input 
+              type="text" 
+              id="ai-instruction-input" 
+              class="instruction-input" 
+              placeholder="e.g., 'compress this image under 50KB', 'increase PDF to 100KB', 'resize to 1200x800'"
+              autocomplete="off"
+            />
+            <button class="clear-input-btn" id="clear-instruction-btn" style="display: none;" title="Clear">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Quick Suggestion Chips -->
+          <div class="suggestion-chips">
+            <span class="chip-label">Try:</span>
+            <button class="prompt-chip" data-prompt="compress under 50KB">“compress under 50KB”</button>
+            <button class="prompt-chip" data-prompt="increase PDF to 100KB">“increase PDF to 100KB”</button>
+            <button class="prompt-chip" data-prompt="resize to 1200x800">“resize to 1200x800”</button>
+            <button class="prompt-chip" data-prompt="convert to WEBP">“convert to WEBP”</button>
+            <button class="prompt-chip" data-prompt="rotate 90 degrees">“rotate 90 degrees”</button>
+            <button class="prompt-chip" data-prompt="compress PDF under 300KB">“compress PDF under 300KB”</button>
+            <button class="prompt-chip" data-prompt="split pages 1 to 3">“split pages 1 to 3”</button>
+          </div>
+        </div>
+
+        <!-- Universal Dropzone -->
+        <div class="dropzone" id="ai-dropzone">
+          <input type="file" id="ai-file-input" class="file-input-hidden" accept="image/*,.pdf" />
+          <div class="dropzone-content" id="ai-dropzone-content">
+            <div class="upload-icon-circle">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="dropzone-text">
+              <span class="dropzone-primary">Click to select or drag and drop file here</span>
+              <span class="dropzone-secondary">Supports JPG, PNG, WEBP, and PDF documents (Up to 10MB)</span>
+            </div>
+          </div>
+
+          <!-- File Selected Preview Card inside Dropzone -->
+          <div class="file-preview-card" id="ai-file-preview" style="display: none;">
+            <div class="preview-thumb-container" id="ai-thumb-container">
+              <div class="file-icon-placeholder" id="ai-file-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <img id="ai-thumb-img" class="thumb-img" alt="Preview" style="display: none;" />
+            </div>
+            <div class="preview-details">
+              <div class="preview-filename" id="ai-preview-name">filename.jpg</div>
+              <div class="preview-meta">
+                <span id="ai-preview-size">0 KB</span> • <span id="ai-preview-type">Image</span>
+              </div>
+            </div>
+            <button class="remove-file-btn" id="ai-remove-file-btn" title="Remove file">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Process Action Button -->
+        <div class="action-footer">
+          <button class="execute-btn" id="run-ai-btn" disabled>
+            <span class="btn-spinner" id="ai-btn-spinner" style="display: none;"></span>
+            <span class="btn-text" id="ai-btn-text">Execute AI Pipeline</span>
+            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= MODE 2: STUDIO TOOLS ================= -->
+      <div class="mode-content" id="studio-mode-panel" style="display: none;">
+        <div class="studio-subtabs">
+          <button class="studio-subtab active" id="subtab-img">Image Operations</button>
+          <button class="studio-subtab" id="subtab-pdf">PDF Operations</button>
+        </div>
+
+        <!-- Operations Selector Grid -->
+        <div class="tool-selector-grid" id="image-tools-grid">
+          <button class="tool-card active" data-tool="img-compress">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14h6m-6 4h6m4-4h6m-6 4h6M4 6h16M4 10h16"/>
+              </svg>
+            </span>
+            <span class="tool-name">Compress</span>
+            <span class="tool-desc">Target KB size</span>
+          </button>
+          <button class="tool-card" data-tool="img-increase">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </span>
+            <span class="tool-name">Increase Size</span>
+            <span class="tool-desc">Expand to min KB</span>
+          </button>
+          <button class="tool-card" data-tool="img-resize">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+              </svg>
+            </span>
+            <span class="tool-name">Resize</span>
+            <span class="tool-desc">Dimensions / Scale</span>
+          </button>
+          <button class="tool-card" data-tool="img-convert">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+            </span>
+            <span class="tool-name">Convert</span>
+            <span class="tool-desc">PNG, JPG, WEBP</span>
+          </button>
+          <button class="tool-card" data-tool="img-rotate">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+            </span>
+            <span class="tool-name">Rotate</span>
+            <span class="tool-desc">90°, 180°, 270°</span>
+          </button>
+        </div>
+
+        <div class="tool-selector-grid" id="pdf-tools-grid" style="display: none;">
+          <button class="tool-card active" data-tool="pdf-compress">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14h6m-6 4h6m4-4h6m-6 4h6M4 6h16M4 10h16"/>
+              </svg>
+            </span>
+            <span class="tool-name">Compress PDF</span>
+            <span class="tool-desc">Under target KB</span>
+          </button>
+          <button class="tool-card" data-tool="pdf-increase">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </span>
+            <span class="tool-name">Increase PDF</span>
+            <span class="tool-desc">Expand to min KB</span>
+          </button>
+          <button class="tool-card" data-tool="pdf-merge">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+            </span>
+            <span class="tool-name">Merge PDFs</span>
+            <span class="tool-desc">Combine 2+ files</span>
+          </button>
+          <button class="tool-card" data-tool="pdf-split">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="3"></circle>
+                <circle cx="6" cy="18" r="3"></circle>
+                <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+                <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+                <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+              </svg>
+            </span>
+            <span class="tool-name">Split Range</span>
+            <span class="tool-desc">Page range</span>
+          </button>
+          <button class="tool-card" data-tool="pdf-extract">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </span>
+            <span class="tool-name">Extract Pages</span>
+            <span class="tool-desc">Custom pages</span>
+          </button>
+          <button class="tool-card" data-tool="pdf-images-to-pdf">
+            <span class="tool-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </span>
+            <span class="tool-name">Images to PDF</span>
+            <span class="tool-desc">Merge images</span>
+          </button>
+        </div>
+
+        <!-- Tool Param Panels -->
+        <div class="tool-params-box" id="tool-params-container">
+          <!-- img-compress params -->
+          <div class="tool-param-group" id="params-img-compress">
+            <label class="param-label" for="param-img-target-kb">Target Maximum Size (KB)</label>
+            <div class="slider-input-combo">
+              <input type="range" id="param-img-target-kb-slider" min="10" max="2000" step="10" value="100" class="range-slider" />
+              <input type="number" id="param-img-target-kb" min="10" max="10000" value="100" class="number-input" />
+              <span class="param-unit">KB</span>
+            </div>
+          </div>
+
+          <!-- img-increase params -->
+          <div class="tool-param-group" id="params-img-increase" style="display: none;">
+            <label class="param-label" for="param-img-increase-kb">Target Minimum Size (KB)</label>
+            <div class="slider-input-combo">
+              <input type="range" id="param-img-increase-kb-slider" min="20" max="5000" step="10" value="100" class="range-slider" />
+              <input type="number" id="param-img-increase-kb" min="10" max="10000" value="100" class="number-input" />
+              <span class="param-unit">KB</span>
+            </div>
+            <span class="param-hint">Safely expands file size using JPEG metadata blocks without visual degradation.</span>
+          </div>
+
+          <!-- img-resize params -->
+          <div class="tool-param-group" id="params-img-resize" style="display: none;">
+            <div class="dimensions-grid">
+              <div class="field-item">
+                <label class="param-label" for="param-img-width">Width (px)</label>
+                <input type="number" id="param-img-width" placeholder="e.g. 1200" class="number-input full-width" />
+              </div>
+              <div class="field-item">
+                <label class="param-label" for="param-img-height">Height (px)</label>
+                <input type="number" id="param-img-height" placeholder="e.g. 800" class="number-input full-width" />
+              </div>
+              <div class="field-item">
+                <label class="param-label" for="param-img-scale">Or Scale (%)</label>
+                <input type="number" id="param-img-scale" placeholder="50" min="1" max="500" class="number-input full-width" />
+              </div>
+            </div>
+            <span class="param-hint">Enter width and/or height, or enter percentage scale.</span>
+          </div>
+
+          <!-- img-convert params -->
+          <div class="tool-param-group" id="params-img-convert" style="display: none;">
+            <label class="param-label">Target Format</label>
+            <div class="pill-radio-group">
+              <label class="pill-radio"><input type="radio" name="convert-fmt" value="WEBP" checked><span>WEBP (Modern & Small)</span></label>
+              <label class="pill-radio"><input type="radio" name="convert-fmt" value="PNG"><span>PNG (Lossless)</span></label>
+              <label class="pill-radio"><input type="radio" name="convert-fmt" value="JPEG"><span>JPEG (Standard)</span></label>
+            </div>
+          </div>
+
+          <!-- img-rotate params -->
+          <div class="tool-param-group" id="params-img-rotate" style="display: none;">
+            <label class="param-label">Clockwise Rotation Angle</label>
+            <div class="pill-radio-group">
+              <label class="pill-radio"><input type="radio" name="rotate-deg" value="90" checked><span>90° Clockwise</span></label>
+              <label class="pill-radio"><input type="radio" name="rotate-deg" value="180"><span>180° Flip</span></label>
+              <label class="pill-radio"><input type="radio" name="rotate-deg" value="270"><span>270° (90° Counter)</span></label>
+            </div>
+          </div>
+
+          <!-- pdf-compress params -->
+          <div class="tool-param-group" id="params-pdf-compress" style="display: none;">
+            <label class="param-label" for="param-pdf-target-kb">Target Maximum PDF Size</label>
+            <div class="slider-input-combo">
+              <input type="range" id="param-pdf-target-kb-slider" min="50" max="5000" step="50" value="300" class="range-slider" />
+              <input type="number" id="param-pdf-target-kb" min="20" max="50000" value="300" class="number-input" />
+              <span class="param-unit">KB</span>
+            </div>
+          </div>
+
+          <!-- pdf-increase params -->
+          <div class="tool-param-group" id="params-pdf-increase" style="display: none;">
+            <label class="param-label" for="param-pdf-increase-kb">Target Minimum PDF Size (KB)</label>
+            <div class="slider-input-combo">
+              <input type="range" id="param-pdf-increase-kb-slider" min="50" max="10000" step="50" value="200" class="range-slider" />
+              <input type="number" id="param-pdf-increase-kb" min="20" max="50000" value="200" class="number-input" />
+              <span class="param-unit">KB</span>
+            </div>
+            <span class="param-hint">Appends valid ISO comment padding to satisfy minimum portal size requirements.</span>
+          </div>
+
+          <!-- pdf-split params -->
+          <div class="tool-param-group" id="params-pdf-split" style="display: none;">
+            <div class="dimensions-grid">
+              <div class="field-item">
+                <label class="param-label" for="param-pdf-start-page">Start Page (1-based)</label>
+                <input type="number" id="param-pdf-start-page" min="1" value="1" class="number-input full-width" />
+              </div>
+              <div class="field-item">
+                <label class="param-label" for="param-pdf-end-page">End Page (Optional)</label>
+                <input type="number" id="param-pdf-end-page" min="1" placeholder="Leave empty for last page" class="number-input full-width" />
+              </div>
+            </div>
+          </div>
+
+          <!-- pdf-extract params -->
+          <div class="tool-param-group" id="params-pdf-extract" style="display: none;">
+            <label class="param-label" for="param-pdf-pages-list">Page Numbers to Extract</label>
+            <input type="text" id="param-pdf-pages-list" placeholder="e.g. 1, 3, 5, 8" class="text-input full-width" value="1" />
+            <span class="param-hint">Comma-separated page numbers.</span>
+          </div>
+        </div>
+
+        <!-- Studio Dropzone -->
+        <div class="dropzone" id="studio-dropzone">
+          <input type="file" id="studio-file-input" class="file-input-hidden" />
+          <div class="dropzone-content" id="studio-dropzone-content">
+            <div class="upload-icon-circle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <div class="dropzone-text">
+              <span class="dropzone-primary" id="studio-dropzone-text">Select file(s) for this operation</span>
+              <span class="dropzone-secondary" id="studio-dropzone-hint">Upload required file</span>
+            </div>
+          </div>
+
+          <div class="file-preview-card" id="studio-file-preview" style="display: none;">
+            <div class="preview-thumb-container" id="studio-thumb-container">
+              <div class="file-icon-placeholder" id="studio-file-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <img id="studio-thumb-img" class="thumb-img" alt="Preview" style="display: none;" />
+            </div>
+            <div class="preview-details">
+              <div class="preview-filename" id="studio-preview-name">file</div>
+              <div class="preview-meta">
+                <span id="studio-preview-size">0 KB</span>
+              </div>
+            </div>
+            <button class="remove-file-btn" id="studio-remove-file-btn" title="Remove file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Studio Action Button -->
+        <div class="action-footer">
+          <button class="execute-btn" id="run-studio-btn" disabled>
+            <span class="btn-spinner" id="studio-btn-spinner" style="display: none;"></span>
+            <span class="btn-text" id="studio-btn-text">Execute Operation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= PROCESSING PROGRESS OVERLAY ================= -->
+      <div class="processing-card" id="processing-overlay" style="display: none;">
+        <div class="processing-spinner-ring"></div>
+        <div class="processing-info">
+          <h3 class="processing-title" id="processing-status-title">Processing file with NexaForge...</h3>
+          <p class="processing-subtitle" id="processing-status-step">Running deterministic memory pipeline</p>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill indeterminate"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= RESULT DOWNLOAD CARD ================= -->
+      <div class="result-card glass-panel" id="result-card" style="display: none;">
+        <div class="result-header">
+          <div class="success-icon-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3 class="result-title">Processing Verified & Complete</h3>
+            <p class="result-subtitle" id="result-filename-display">download.jpg</p>
+          </div>
+        </div>
+
+        <!-- AI Verified Response & Explanation Box -->
+        <div class="ai-response-box" id="ai-response-box" style="display: none;">
+          <div class="ai-response-header">
+            <span class="ai-response-label">Agent Audit & Verification</span>
+            <span class="verification-badge" id="result-verification-badge">Verified</span>
+          </div>
+          <p class="ai-response-text" id="result-reply-text"></p>
+          <div class="verification-details-bar" id="result-verification-details">
+            <span class="verification-target" id="verification-target-val"></span>
+            <span class="verification-audit" id="verification-audit-val"></span>
+          </div>
+        </div>
+
+        <div class="result-metrics-grid" id="result-metrics">
+          <div class="metric-item">
+            <span class="metric-label">Original Size</span>
+            <span class="metric-val" id="metric-orig-size">--</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Processed Size</span>
+            <span class="metric-val text-success" id="metric-new-size">--</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Efficiency / Status</span>
+            <span class="metric-val badge-efficiency" id="metric-reduction">Ready</span>
+          </div>
+        </div>
+
+        <!-- Continuous In-Memory Stream Editing (No Download/Re-upload Needed) -->
+        <div class="chained-stream-box" id="chained-stream-box">
+          <div class="chained-stream-header">
+            <div class="chained-stream-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+              <span>Continue Editing (Stream In RAM)</span>
+            </div>
+            <span class="stream-status-badge" id="stream-status-badge">Zero Re-upload Needed</span>
+          </div>
+          <p class="chained-stream-desc">
+            This file is active in memory. You can rotate, convert, re-compress, or expand it directly:
+          </p>
+          <div class="chained-chips-list" id="chained-chips-list">
+            <button type="button" class="chained-chip" data-chain-prompt="rotate 90 degrees">Rotate 90° Clockwise</button>
+            <button type="button" class="chained-chip" data-chain-prompt="flip 180 degrees">Flip 180°</button>
+            <button type="button" class="chained-chip" data-chain-prompt="convert to webp">Convert to WEBP</button>
+            <button type="button" class="chained-chip" data-chain-prompt="compress under 30kb">Compress to 30 KB</button>
+            <button type="button" class="chained-chip" data-chain-prompt="increase to 100kb">Increase to 100 KB</button>
+          </div>
+          <form class="chained-form" id="chained-form">
+            <div class="chained-input-group">
+              <input 
+                type="text" 
+                id="chained-input" 
+                class="chained-input" 
+                placeholder="Type follow-up instruction (e.g. 'rotate 90 degrees' or 'convert to webp')..." 
+                autocomplete="off" 
+              />
+              <button type="submit" class="chained-submit-btn" id="chained-submit-btn">
+                <span class="chained-spinner" id="chained-spinner" style="display: none;"></span>
+                <span class="chained-btn-text" id="chained-btn-text">Apply Edit</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="result-actions">
+          <a id="download-result-link" class="download-btn" href="#" download>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download Processed File</span>
+          </a>
+          <button class="secondary-btn" id="process-another-btn">Process Another File</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Features Overview Showcase Grid -->
+    <section class="features-showcase">
+      <h2 class="section-title">Built for Performance & Production Quality</h2>
+      <div class="feature-cards-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">LangGraph Agent</h3>
+          <p class="feature-desc">StateGraph orchestrator with Groq LLM parsing user intent and routing to zero-overhead tools.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">ChromaDB RAG</h3>
+          <p class="feature-desc">HNSW vector database + sentence-transformers embeddings for instantaneous technical knowledge retrieval.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <h3 class="feature-title">In-Memory Engine</h3>
+          <p class="feature-desc">Zero disk writes. Pillow and PyMuPDF stream bytes directly via BytesIO, ensuring 0.5GB RAM safety.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">LangSmith Tracing</h3>
+          <p class="feature-desc">Full LLM observability, recording latency, token counts, and execution traces for every pipeline call.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= RAG ASSISTANT DRAWER ================= -->
+  <div class="assistant-drawer" id="assistant-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-block">
+        <div class="assistant-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <circle cx="12" cy="5" r="2"></circle>
+            <path d="M12 7v4"></path>
+            <line x1="8" y1="16" x2="8" y2="16"></line>
+            <line x1="16" y1="16" x2="16" y2="16"></line>
+          </svg>
+        </div>
+        <div>
+          <h3 class="assistant-name">NexaForge Assistant</h3>
+          <span class="assistant-badge">ChromaDB + Groq RAG</span>
+        </div>
+      </div>
+      <button class="close-drawer-btn" id="close-assistant-btn" aria-label="Close Assistant">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-bubble bot">
+        <p>Welcome to NexaForge RAG Assistant. Ask any question about media algorithms, compression mathematics, supported formats, or portal limits.</p>
+        <div class="suggested-questions">
+          <button class="rag-chip" data-q="How does PDF compression work in NexaForge?">How does PDF compression work?</button>
+          <button class="rag-chip" data-q="What image formats are supported?">What formats are supported?</button>
+          <button class="rag-chip" data-q="How do I split and extract PDF pages?">How do I split PDF pages?</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="chat-input-bar" id="chat-form">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Ask about NexaForge..." autocomplete="off" />
+      <button type="submit" class="chat-send-btn" id="chat-send-btn" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Floating Assistant Toggle Button -->
+  <button class="floating-assistant-btn" id="floating-assistant-btn" aria-label="Open AI Assistant">
+    <div class="floating-btn-glow"></div>
+    <span class="floating-btn-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </span>
+    <span class="floating-btn-text">Ask AI</span>
+  </button>
+
+  <!-- ================= SETTINGS MODAL ================= -->
+  <div class="modal-backdrop" id="settings-modal" style="display: none;">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">API Configuration</h3>
+        <button class="modal-close-btn" id="close-settings-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Configure backend API endpoint. For local development use <code>http://localhost:8000</code>. For production use your Railway URL.
+        </p>
+        <div class="form-group">
+          <label class="param-label" for="api-base-url-input">Backend Base URL</label>
+          <input type="url" id="api-base-url-input" class="text-input full-width" placeholder="http://localhost:8000" />
+        </div>
+        <div class="api-test-result" id="api-test-result"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="test-api-btn">Test Connection</button>
+        <button class="primary-pill-btn" id="save-settings-btn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SYSTEM DIAGNOSTICS MODAL (RECRUITER AUDIT) ================= -->
+  <div class="modal-backdrop" id="diagnostics-modal" style="display: none;">
+    <div class="modal-card diagnostics-card glass-panel">
+      <div class="modal-header">
+        <div class="diagnostics-title-group">
+          <div class="diagnostics-pulse-pill">
+            <span class="status-dot green"></span>
+            <span>Live Health Telemetry</span>
+          </div>
+          <h3 class="modal-title">System & API Diagnostics</h3>
+        </div>
+        <button class="modal-close-btn" id="close-diagnostics-btn" aria-label="Close Diagnostics">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Real-time connection telemetry for recruiters & engineering evaluators. Verify that FastAPI, Groq LLM inference, ChromaDB vector store, and LangSmith observability are active.
+        </p>
+
+        <div class="services-list" id="services-list">
+          <!-- Dynamically populated from /api/system/status -->
+        </div>
+
+        <div class="diagnostics-note-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <p><strong>Zero-Disk RAM Architecture:</strong> All pipelines stream via <code>BytesIO</code> buffers, ensuring &lt;0.5GB footprint and zero temporary disk exhaustion on cloud instances.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="refresh-diagnostics-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>Refresh Telemetry</span>
+        </button>
+        <button class="primary-pill-btn" id="close-diagnostics-btn-2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        © 2026 <strong>NexaForge</strong> — Developed by Sayan Mandal. High-performance AI media processing.
+      </div>
+      <div class="footer-meta">
+        <span>FastAPI</span> • <span>LangGraph</span> • <span>LangSmith</span> • <span>RAGAS Evaluated</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
