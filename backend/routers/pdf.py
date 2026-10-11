@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, Form, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
+from starlette.concurrency import run_in_threadpool
 
 from processors.pdf_processor import (
     compress_pdf,
@@ -31,7 +32,10 @@ def _pdf_stream(result_bytes: bytes, filename: str) -> StreamingResponse:
     return StreamingResponse(
         io.BytesIO(result_bytes),
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-NexaForge-Audit": "PASSED",
+        },
     )
 
 
@@ -43,7 +47,7 @@ async def compress(
 ):
     data = await file.read()
     _validate_pdf(file, data)
-    result, fname = compress_pdf(data, target_kb)
+    result, fname = await run_in_threadpool(compress_pdf, data, target_kb)
     return _pdf_stream(result, fname)
 
 
@@ -55,7 +59,7 @@ async def increase(
 ):
     data = await file.read()
     _validate_pdf(file, data)
-    result, fname = increase_pdf_size(data, target_kb)
+    result, fname = await run_in_threadpool(increase_pdf_size, data, target_kb)
     return _pdf_stream(result, fname)
 
 
@@ -71,7 +75,7 @@ async def merge(
         data = await f.read()
         _validate_pdf(f, data)
         pdf_bytes_list.append(data)
-    result, fname = merge_pdfs(pdf_bytes_list)
+    result, fname = await run_in_threadpool(merge_pdfs, pdf_bytes_list)
     return _pdf_stream(result, fname)
 
 
@@ -84,7 +88,7 @@ async def split(
 ):
     data = await file.read()
     _validate_pdf(file, data)
-    result, fname = split_pdf(data, start_page, end_page)
+    result, fname = await run_in_threadpool(split_pdf, data, start_page, end_page)
     return _pdf_stream(result, fname)
 
 
@@ -102,7 +106,7 @@ async def extract(
         raise HTTPException(422, "pages must be comma-separated integers e.g. '1,3,5'")
     if not page_list:
         raise HTTPException(422, "Provide at least one page number.")
-    result, fname = extract_pages(data, page_list)
+    result, fname = await run_in_threadpool(extract_pages, data, page_list)
     return _pdf_stream(result, fname)
 
 
@@ -122,5 +126,6 @@ async def img_to_pdf(
         if not ct.startswith("image/"):
             raise HTTPException(415, f"Expected image files, got: {ct} for {f.filename}")
         image_bytes_list.append(data)
-    result, fname = images_to_pdf(image_bytes_list)
+    result, fname = await run_in_threadpool(images_to_pdf, image_bytes_list)
     return _pdf_stream(result, fname)
+

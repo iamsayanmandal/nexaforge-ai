@@ -5,11 +5,11 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-0.2-FF6F00.svg)](https://langchain-ai.github.io/langgraph/)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-HNSW-orange.svg)](https://www.trychroma.com/)
 [![Groq](https://img.shields.io/badge/Groq-GPT--OSS--20B-f55036.svg)](https://groq.com/)
-[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF.svg)](https://github.com)
+[![CI/CD](https://github.com/iamsayanmandal/nexaforge-ai/actions/workflows/test.yml/badge.svg)](https://github.com/iamsayanmandal/nexaforge-ai/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > **Live Demo:** [nexaforge.sayanmandal.in](https://nexaforge.sayanmandal.in)  
-> **Backend API Docs:** `https://<your-railway-url>/docs` (Interactive Swagger UI)
+> **Backend API Docs:** [https://nexaforge-ai-production.up.railway.app/docs](https://nexaforge-ai-production.up.railway.app/docs) (Interactive Swagger UI)
 
 ---
 
@@ -23,7 +23,7 @@
 - *"split pages 1 to 5"*
 - *"rotate 90 degrees"*
 
-Behind the scenes, a **LangGraph StateGraph agent** powered by **Groq (openai/gpt-oss-20b)** parses user intent, validates deterministic parameters, and routes execution into a zero-overhead **in-memory streaming pipeline** (Pillow + PyMuPDF + pikepdf). The LLM never sees or stores raw binary files, guaranteeing strict data confidentiality and sub-second processing.
+Behind the scenes, a **LangGraph StateGraph agent** powered by **Groq (openai/gpt-oss-20b)** parses user intent, validates deterministic parameters via Pydantic schemas, and routes execution into a zero-overhead **ephemeral in-memory streaming pipeline** (Pillow + PyMuPDF + pikepdf). The LLM never sees or stores raw binary files, guaranteeing strict data confidentiality and sub-second processing.
 
 NexaForge also includes a **RAG (Retrieval-Augmented Generation) Knowledge Assistant** powered by **ChromaDB vector search** and **sentence-transformers embeddings** (`all-MiniLM-L6-v2`) that answers user questions regarding media algorithms, compression mathematics, and system limits.
 
@@ -37,7 +37,7 @@ flowchart TD
     
     subgraph Frontend ["Frontend Presentation Layer"]
         UI["Dark Glassmorphism Interface"]
-        Dropzone["Interactive Dropzone"]
+        Dropzone["Interactive Dropzone (A11y Key Nav)"]
         ChatDrawer["RAG Assistant Drawer"]
         Diagnostics["Live Recruiter Diagnostics"]
     end
@@ -46,8 +46,8 @@ flowchart TD
         API["FastAPI Application (/api)"]
         
         subgraph Agentic ["AI Intelligence Layer"]
-            Graph["LangGraph StateGraph"]
-            Groq["Groq Cloud Inference (GPT-OSS-20B)"]
+            Graph["LangGraph StateGraph\n(Cyclic Parameter Self-Repair Loop)"]
+            Groq["Groq Cloud Inference (openai/gpt-oss-20b)"]
             LangSmith["LangSmith Observability\n(Traces, Latency, Token Metrics)"]
         end
         
@@ -85,14 +85,15 @@ flowchart TD
 
 | Number | Competency | Implementation Details | Architecture Reference |
 |---|---|---|---|
-| 1 | **AI Agents & Tool Calling** | LangGraph `StateGraph` with conditional routing, parameter validation, and self-verification | [`backend/agent/graph.py`](backend/agent/graph.py) |
-| 2 | **LangGraph Orchestration** | Typed state machine (`START -> parse_instruction -> route -> tool/error -> END`) | [`backend/agent/graph.py`](backend/agent/graph.py) |
+| 1 | **AI Agents & Tool Calling** | LangGraph `StateGraph` with Pydantic validation, cyclic self-repair loops, and deterministic execution | [`backend/agent/graph.py`](backend/agent/graph.py) |
+| 2 | **LangGraph Orchestration** | Directed state machine with dynamic self-healing parameters (`START -> parse -> validate -> repair_loop -> tool -> END`) | [`backend/agent/graph.py`](backend/agent/graph.py) |
 | 3 | **RAG Pipeline** | Domain knowledge ingestion, semantic chunking, and contextual retrieval QA | [`backend/rag/assistant.py`](backend/rag/assistant.py) |
 | 4 | **Embeddings & Vector Search** | `sentence-transformers/all-MiniLM-L6-v2` with ChromaDB in-memory HNSW index | [`backend/rag/assistant.py`](backend/rag/assistant.py) |
 | 5 | **LLM Observability & Tracing** | Zero-overhead LangSmith tracing recording latency, execution trees, and tokens | [`backend/main.py`](backend/main.py) |
 | 6 | **LLM / RAG Evaluation** | Quantitative benchmark scoring Faithfulness, Answer Relevancy, and Retrieval Hit Rate | [`evaluation/rag_eval.py`](evaluation/rag_eval.py) |
-| 7 | **FastAPI Production Engine** | Async non-blocking endpoints, in-memory `BytesIO` streaming, zero disk writes | [`backend/routers/`](backend/routers/) |
-| 8 | **CI/CD Automation** | GitHub Actions workflow executing 50 automated tests on push and pull request | [`.github/workflows/test.yml`](.github/workflows/test.yml) |
+| 7 | **FastAPI Production Engine** | Threadpool-isolated async endpoints, in-memory `BytesIO` streaming, ephemeral zero-persistent disk storage | [`backend/routers/`](backend/routers/) |
+| 8 | **CI/CD Automation** | GitHub Actions workflow executing 54 automated tests on push and pull request | [`.github/workflows/test.yml`](.github/workflows/test.yml) |
+
 
 ---
 
@@ -141,7 +142,7 @@ Automated benchmark evaluation executed via [`evaluation/rag_eval.py`](evaluatio
 
 ### 2. Clone and Setup Environment
 ```bash
-git clone https://github.com/your-username/nexaforge-ai.git
+git clone https://github.com/iamsayanmandal/nexaforge-ai.git
 cd nexaforge-ai/backend
 
 # Create virtual environment
@@ -191,7 +192,7 @@ pytest tests/ -v
 ### Backend Deployment (Railway.app)
 1. Commit and push repository to GitHub.
 2. Create a new service on [Railway.app](https://railway.app/) and select the repository.
-3. Railway automatically detects `backend/Dockerfile` and `railway.toml`.
+3. Railway automatically detects the root `Dockerfile` and `railway.toml`.
 4. Define the following environment variables in the Railway dashboard:
    - `GROQ_API_KEY`
    - `LANGCHAIN_TRACING_V2`

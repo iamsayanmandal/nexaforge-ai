@@ -14,7 +14,8 @@ from PIL import Image, ImageOps
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _open(image_bytes: bytes) -> Image.Image:
-    return Image.open(io.BytesIO(image_bytes))
+    img = Image.open(io.BytesIO(image_bytes))
+    return ImageOps.exif_transpose(img) or img
 
 
 def _to_bytes(img: Image.Image, fmt: str = "JPEG", quality: int = 85) -> bytes:

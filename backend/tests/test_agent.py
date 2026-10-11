@@ -145,3 +145,51 @@ def test_error_node_message_generation():
     assert res.get("error") is not None
     assert "Unable to determine the intended operation" in res["error"]
 
+
+def test_fallback_mb_and_decimal_parsing():
+    from agent.graph import _heuristic_fallback_parse
+    # 1MB -> 1000 KB
+    res1 = _heuristic_fallback_parse("compress image under 1MB", "image")
+    assert res1 is not None
+    assert res1["operation"] == "compress"
+    assert res1["params"]["target_kb"] == 1000
+
+    # 0.5 MB -> 500 KB
+    res2 = _heuristic_fallback_parse("reduce photo under 0.5 MB", "image")
+    assert res2 is not None
+    assert res2["params"]["target_kb"] == 500
+
+
+def test_fallback_extract_page_range_expansion():
+    from agent.graph import _heuristic_fallback_parse
+    res = _heuristic_fallback_parse("extract pages 2-4", "pdf")
+    assert res is not None
+    assert res["operation"] == "extract_pages"
+    assert res["params"]["pages"] == [2, 3, 4]
+
+
+def test_fallback_percentage_scale_parsing():
+    from agent.graph import _heuristic_fallback_parse
+    res = _heuristic_fallback_parse("scale by 50%", "image")
+    assert res is not None
+    assert res["operation"] == "resize"
+    assert res["params"]["scale_percent"] == 50
+
+
+def test_repair_node_normalizes_defective_params():
+    from agent.graph import repair_node
+    state: AgentState = {
+        "instruction": "compress image",
+        "file_type": "image",
+        "file_name": "photo.jpg",
+        "operation": "compress",
+        "params": {"target_kb": -10},
+        "error": "Target must be positive",
+        "fallback_used": False,
+        "retry_count": 0,
+    }
+    repaired = repair_node(state)
+    assert repaired["params"]["target_kb"] == 100
+    assert repaired["error"] is None
+    assert repaired["retry_count"] == 1
+

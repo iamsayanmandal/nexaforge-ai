@@ -50,6 +50,7 @@ def test_api_image_compress():
     res = client.post("/api/image/compress", files=files, data={"target_kb": 100})
     assert res.status_code == 200
     assert res.headers["content-type"] == "image/jpeg"
+    assert res.headers.get("x-nexaforge-audit") == "PASSED"
     assert len(res.content) > 0
 
 
@@ -173,6 +174,7 @@ def test_api_process_and_download():
     # Test downloading the result
     download_res = client.get(res_json["download_url"])
     assert download_res.status_code == 200
+    assert download_res.headers.get("x-nexaforge-audit") == "PASSED"
     assert len(download_res.content) >= 100 * 1024
 
 

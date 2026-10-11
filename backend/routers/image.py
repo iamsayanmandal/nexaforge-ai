@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, Form, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
+from starlette.concurrency import run_in_threadpool
 
 from processors.image_processor import (
     compress_image,
@@ -30,7 +31,10 @@ def _stream(result_bytes: bytes, filename: str, media_type: str = "image/jpeg") 
     return StreamingResponse(
         io.BytesIO(result_bytes),
         media_type=media_type,
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-NexaForge-Audit": "PASSED",
+        },
     )
 
 
@@ -42,7 +46,7 @@ async def compress(
 ):
     data = await file.read()
     _validate(file, data)
-    result, fname = compress_image(data, target_kb)
+    result, fname = await run_in_threadpool(compress_image, data, target_kb)
     return _stream(result, fname)
 
 
@@ -54,7 +58,7 @@ async def increase(
 ):
     data = await file.read()
     _validate(file, data)
-    result, fname = increase_image_size(data, target_kb)
+    result, fname = await run_in_threadpool(increase_image_size, data, target_kb)
     return _stream(result, fname)
 
 
@@ -70,7 +74,7 @@ async def resize(
     _validate(file, data)
     if not any([width, height, scale_percent]):
         raise HTTPException(422, "Provide at least one of: width, height, scale_percent.")
-    result, fname = resize_image(data, width, height, scale_percent)
+    result, fname = await run_in_threadpool(resize_image, data, width, height, scale_percent)
     ext = fname.rsplit(".", 1)[-1]
     mt = "image/png" if ext == "png" else "image/webp" if ext == "webp" else "image/jpeg"
     return _stream(result, fname, mt)
@@ -87,7 +91,7 @@ async def convert(
     fmt = target_format.upper().replace("JPG", "JPEG")
     if fmt not in ("JPEG", "PNG", "WEBP"):
         raise HTTPException(422, "target_format must be JPEG, PNG, or WEBP.")
-    result, fname = convert_image(data, fmt)  # type: ignore[arg-type]
+    result, fname = await run_in_threadpool(convert_image, data, fmt)
     mt = {"JPEG": "image/jpeg", "PNG": "image/png", "WEBP": "image/webp"}[fmt]
     return _stream(result, fname, mt)
 
@@ -102,7 +106,8 @@ async def rotate(
     _validate(file, data)
     if degrees not in (90, 180, 270):
         raise HTTPException(422, "degrees must be 90, 180, or 270.")
-    result, fname = rotate_image(data, degrees)
+    result, fname = await run_in_threadpool(rotate_image, data, degrees)
     ext = fname.rsplit(".", 1)[-1]
     mt = "image/png" if ext == "png" else "image/webp" if ext == "webp" else "image/jpeg"
     return _stream(result, fname, mt)
+

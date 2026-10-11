@@ -195,7 +195,8 @@
     }, duration);
   }
 
-  // ── System Diagnostics & Recruiter Telemetry ──────────────────────────────
+  let coldStartRetries = 0;
+
   async function checkSystemDiagnostics(openModal = false) {
     if (DOM.refreshDiagnosticsBtn && openModal) {
       DOM.refreshDiagnosticsBtn.disabled = true;
@@ -222,6 +223,8 @@
       const data = await res.json();
       const comps = data.components || {};
 
+      coldStartRetries = 0; // Reset counter on success
+
       const isFastApiOnline = comps.api_server?.status === 'online';
       const isLlmOnline = comps.llm_engine?.status === 'online';
       const isChromaOnline = comps.vector_rag?.status === 'online';
@@ -247,8 +250,15 @@
         DOM.diagnosticsModal.style.display = 'grid';
       }
     } catch (err) {
-      DOM.apiStatusBadge.className = 'status-badge-btn offline';
-      DOM.apiStatusText.textContent = 'Backend Offline';
+      if (coldStartRetries < 2 && state.apiBaseUrl === PRODUCTION_API_URL) {
+        coldStartRetries++;
+        DOM.apiStatusBadge.className = 'status-badge-btn warning';
+        DOM.apiStatusText.textContent = 'Waking up server...';
+        setTimeout(() => checkSystemDiagnostics(openModal), 3500);
+      } else {
+        DOM.apiStatusBadge.className = 'status-badge-btn offline';
+        DOM.apiStatusText.textContent = 'Backend Offline';
+      }
 
       if (DOM.servicesList && openModal) {
         DOM.servicesList.innerHTML = `
@@ -274,10 +284,11 @@
 
   function renderDiagnosticsModal(comps, data) {
     if (!DOM.servicesList) return;
+    const rssText = comps.api_server?.memory_rss_mb ? `Live RAM RSS: ${comps.api_server.memory_rss_mb} MB` : 'Zero Persistent Disk';
     const list = [
       {
         name: 'FastAPI Backend Engine',
-        meta: 'ASGI / Uvicorn • Zero-Disk Memory Pipeline (RAM Safe)',
+        meta: `ASGI / Uvicorn • ${rssText} • Ephemeral Memory Stream`,
         status: comps.api_server?.status === 'online' ? 'online' : 'offline',
         label: comps.api_server?.status === 'online' ? 'Online' : 'Offline',
       },
@@ -376,6 +387,14 @@
   DOM.aiDropzone.addEventListener('click', (e) => {
     if (e.target.closest('#ai-remove-file-btn')) return;
     DOM.aiFileInput.click();
+  });
+
+  DOM.aiDropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (e.target.closest('#ai-remove-file-btn')) return;
+      DOM.aiFileInput.click();
+    }
   });
 
   DOM.aiFileInput.addEventListener('change', (e) => {
@@ -588,6 +607,14 @@
   DOM.studioDropzone.addEventListener('click', (e) => {
     if (e.target.closest('#studio-remove-file-btn')) return;
     DOM.studioFileInput.click();
+  });
+
+  DOM.studioDropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (e.target.closest('#studio-remove-file-btn')) return;
+      DOM.studioFileInput.click();
+    }
   });
 
   DOM.studioFileInput.addEventListener('change', (e) => {
@@ -1152,6 +1179,21 @@
   checkSystemDiagnostics();
   // Poll telemetry every 30 seconds so visitors and recruiters have live status
   setInterval(() => checkSystemDiagnostics(false), 30000);
+
+  // ── Global Accessibility: Esc key closes open modals and drawers ──────────
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (DOM.settingsModal && DOM.settingsModal.style.display === 'grid') {
+        DOM.settingsModal.style.display = 'none';
+      }
+      if (DOM.diagnosticsModal && DOM.diagnosticsModal.style.display === 'grid') {
+        DOM.diagnosticsModal.style.display = 'none';
+      }
+      if (state.chatOpen) {
+        closeChat();
+      }
+    }
+  });
 
   // ── PWA Service Worker Registration ───────────────────────────────────────
   if ('serviceWorker' in navigator) {

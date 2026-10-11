@@ -54,8 +54,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS — allow all origins (Cloudflare Workers, Pages, Custom Domains, Dev) ──
-ALLOWED_ORIGINS = [
+# ── CORS Configuration ───────────────────────────────────────────────────────
+# Explicit allowlist of production and development origins
+DEFAULT_ORIGINS = [
     "https://nexaforge.sayanmandal.in",
     "https://nexaforge-sayan.web.app",
     "https://nexaforge-sayan.firebaseapp.com",
@@ -65,16 +66,20 @@ ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:5500",   # VS Code Live Server
     "http://127.0.0.1:3000",
-    "null",                     # file:// opened locally
+    "null",                     # Local file:// preview
 ]
+
+# Allow overriding/appending origins via environment variable (e.g. CORS_ORIGINS="http://localhost:5173")
+extra_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+ALLOWED_ORIGINS = list(dict.fromkeys(DEFAULT_ORIGINS + extra_origins))
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https?://.*$",
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,  # Stateless token/header API; disables wildcard credential leak
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition", "X-NexaForge-Audit"],  # Allows browser JS to read custom response headers
 )
 
 # ── Routers ──────────────────────────────────────────────────────────────────

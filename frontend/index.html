@@ -6,6 +6,22 @@
   <title>NexaForge — AI Media Processing Engine</title>
   <meta name="description" content="Intelligent, agentic AI media processing engine for images and PDFs. Powered by LangGraph, ChromaDB RAG, and FastAPI.">
   
+  <!-- Social Media & Link Preview Metadata (Open Graph & Twitter) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NexaForge">
+  <meta property="og:url" content="https://nexaforge.sayanmandal.in/">
+  <meta property="og:title" content="NexaForge — AI Media Processing Engine">
+  <meta property="og:description" content="Agentic media transformations via natural language. Fast, deterministic, in-memory image and PDF pipelines powered by LangGraph, ChromaDB, and FastAPI.">
+  <meta property="og:image" content="https://nexaforge.sayanmandal.in/icons/icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://nexaforge.sayanmandal.in/">
+  <meta name="twitter:title" content="NexaForge — AI Media Processing Engine">
+  <meta name="twitter:description" content="Agentic media transformations via natural language. Fast, deterministic, in-memory image and PDF pipelines powered by LangGraph, ChromaDB, and FastAPI.">
+  <meta name="twitter:image" content="https://nexaforge.sayanmandal.in/icons/icon-512.png">
+
   <!-- PWA & Mobile Web App Meta Tags -->
   <meta name="theme-color" content="#070b14">
   <meta name="mobile-web-app-capable" content="yes">
@@ -155,7 +171,7 @@
         </div>
 
         <!-- Universal Dropzone -->
-        <div class="dropzone" id="ai-dropzone">
+        <div class="dropzone" id="ai-dropzone" tabindex="0" role="button" aria-label="Dropzone: Click or press Enter to select media file" aria-controls="ai-file-input">
           <input type="file" id="ai-file-input" class="file-input-hidden" accept="image/*,.pdf" />
           <div class="dropzone-content" id="ai-dropzone-content">
             <div class="upload-icon-circle">
@@ -195,6 +211,14 @@
               </svg>
             </button>
           </div>
+        </div>
+
+        <!-- Transparent Privacy & Ephemeral RAM Guarantee Notice -->
+        <div class="privacy-notice" id="ai-privacy-notice">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span><strong>Zero Persistent Storage:</strong> Raw binary files stay in ephemeral server RAM with zero disk writes. Only prompt instructions and filename metadata query Groq cloud inference.</span>
         </div>
 
         <!-- AI Process Action Button -->
@@ -440,7 +464,7 @@
         </div>
 
         <!-- Studio Dropzone -->
-        <div class="dropzone" id="studio-dropzone">
+        <div class="dropzone" id="studio-dropzone" tabindex="0" role="button" aria-label="Studio Dropzone: Click or press Enter to select files" aria-controls="studio-file-input">
           <input type="file" id="studio-file-input" class="file-input-hidden" />
           <div class="dropzone-content" id="studio-dropzone-content">
             <div class="upload-icon-circle">
@@ -490,7 +514,7 @@
       </div>
 
       <!-- ================= PROCESSING PROGRESS OVERLAY ================= -->
-      <div class="processing-card" id="processing-overlay" style="display: none;">
+      <div class="processing-card" id="processing-overlay" style="display: none;" role="status" aria-live="polite">
         <div class="processing-spinner-ring"></div>
         <div class="processing-info">
           <h3 class="processing-title" id="processing-status-title">Processing file with NexaForge...</h3>

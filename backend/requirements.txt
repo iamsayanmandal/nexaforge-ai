@@ -28,3 +28,6 @@ pikepdf==9.3.0
 pytest==8.3.3
 pytest-asyncio==0.24.0
 httpx==0.27.2
+
+# System Telemetry
+psutil==6.0.0

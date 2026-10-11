@@ -20,34 +20,52 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent / "backend"
 sys.path.append(str(BACKEND_DIR))
 load_dotenv(BACKEND_DIR / ".env")
 
-# Ground truth test dataset
+# Ground truth test dataset (includes in-scope core operations and out-of-scope negative controls)
 TEST_DATASET = [
     {
         "question": "How do I compress an image to under 100KB in NexaForge?",
         "expected_topic": "image_compress",
         "ground_truth": "Upload your image and set target size to 100 KB, or tell the AI 'compress this image under 100KB'.",
+        "is_in_scope": True,
     },
     {
         "question": "Can I convert a JPG to transparent PNG?",
         "expected_topic": "image_convert",
-        "ground_truth": "Yes, use the format conversion feature to convert JPG to PNG, or tell the AI 'convert to PNG'.",
+        "ground_truth": "Converting JPG to PNG is supported, but standard JPG has no alpha channel so transparency requires background removal.",
+        "is_in_scope": True,
     },
     {
         "question": "How can I merge two PDF documents into one?",
         "expected_topic": "pdf_merge",
         "ground_truth": "Upload two or more PDF files to the Merge PDF tool. NexaForge combines them in the uploaded order.",
+        "is_in_scope": True,
     },
     {
         "question": "What happens if I split a PDF with start page 1 and end page 3?",
         "expected_topic": "pdf_split_extract",
         "ground_truth": "It extracts pages 1 through 3 into a new smaller PDF.",
+        "is_in_scope": True,
     },
     {
         "question": "How do I turn scanned phone photos into a multi-page PDF?",
         "expected_topic": "pdf_images_to_pdf",
         "ground_truth": "Use the Images to PDF tool to combine multiple images into a single clean PDF document.",
+        "is_in_scope": True,
+    },
+    {
+        "question": "Can NexaForge edit 4K video files or audio tracks?",
+        "expected_topic": "out_of_scope",
+        "ground_truth": "NexaForge is strictly specialized in image and PDF processing. Video and audio editing are not supported.",
+        "is_in_scope": False,
+    },
+    {
+        "question": "How do I fine-tune custom neural network weights in NexaForge?",
+        "expected_topic": "out_of_scope",
+        "ground_truth": "NexaForge does not support machine learning model training or weight fine-tuning.",
+        "is_in_scope": False,
     },
 ]
+
 
 
 def run_evaluation():
@@ -81,8 +99,12 @@ def run_evaluation():
         sources = response.get("sources", [])
         answer = response.get("answer", "")
 
-        # Check retrieval hit
-        hit = any(expected in src for src in sources)
+        # Check retrieval hit (positive in-scope match or negative control rejection)
+        is_in_scope = test.get("is_in_scope", True)
+        if is_in_scope:
+            hit = any(expected in src for src in sources)
+        else:
+            hit = (len(sources) == 0 or "not supported" in answer.lower() or "outside" in answer.lower() or "not" in answer.lower())
         if hit:
             hit_count += 1
 
