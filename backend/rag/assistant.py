@@ -16,13 +16,15 @@ import os
 from pathlib import Path
 from functools import lru_cache
 
+# Silence ChromaDB PostHog telemetry before importing vectorstores
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+os.environ.setdefault("CHROMA_TELEMETRY_ENABLED", "False")
+
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-
-os.environ.setdefault("ANONYMOUS_TELEMETRY", "False")
 
 logger = logging.getLogger("nexaforge.rag")
 
@@ -47,6 +49,7 @@ Question: {question}
 Answer:"""
 
 
+@lru_cache(maxsize=1)
 def _load_documents() -> list[dict]:
     """Load all markdown files from the knowledge base."""
     docs = []

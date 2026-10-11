@@ -6,6 +6,10 @@ import os
 import logging
 from contextlib import asynccontextmanager
 
+# Silence ChromaDB PostHog telemetry
+os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
+os.environ.setdefault("CHROMA_TELEMETRY_ENABLED", "False")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
